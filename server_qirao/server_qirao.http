@@ -1,0 +1,6 @@
+@server_qirao_HostAddress = http://localhost:5156
+
+GET {{server_qirao_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
