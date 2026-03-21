@@ -5,15 +5,20 @@ using server_qirao.Features.Quiz.GetLevels;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// Puerto de Railway (usa la variable de entorno PORT)
+var port = Environment.GetEnvironmentVariable("PORT") ?? "5156";
+builder.WebHost.UseUrls($"http://0.0.0.0:{port}");
+
 // OpenAPI
 builder.Services.AddOpenApi();
 
 // DbContext con MySQL
-var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")
+    ?? Environment.GetEnvironmentVariable("CONNECTION_STRING");
 builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)));
+    options.UseMySql(connectionString!, ServerVersion.AutoDetect(connectionString!)));
 
-// CORS para desarrollo local (Flutter)
+// CORS para Flutter
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowFlutterApp", policy =>
@@ -35,7 +40,6 @@ if (app.Environment.IsDevelopment())
     app.MapOpenApi();
 }
 
-app.UseHttpsRedirection();
 app.UseCors("AllowFlutterApp");
 
 // Mapear endpoints
