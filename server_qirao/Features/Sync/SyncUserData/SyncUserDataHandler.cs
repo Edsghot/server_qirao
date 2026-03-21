@@ -50,15 +50,15 @@ public class SyncUserDataHandler(AppDbContext dbContext)
                 usuario.UpdatedAt = now;
             }
 
-            // 2. Sincronizar progreso de quiz
+            // 2. Sincronizar progreso de quiz + respuestas individuales
             foreach (var progress in request.QuizProgress)
             {
-                // Verificar que el QuizLevel existe
                 var levelExists = await _dbContext.QuizLevels
                     .AnyAsync(l => l.Id == progress.Id);
 
                 if (!levelExists) continue;
 
+                // Upsert del progreso por nivel
                 var existingProgress = await _dbContext.UserQuizProgress
                     .FirstOrDefaultAsync(p => p.UserId == request.User.Id && p.QuizLevelId == progress.Id);
 
@@ -83,6 +83,37 @@ public class SyncUserDataHandler(AppDbContext dbContext)
                     existingProgress.Stars = progress.Stars;
                     existingProgress.Points = progress.Points;
                     existingProgress.UpdatedAt = now;
+                }
+
+                // 3. Guardar respuestas individuales (si vienen)
+                if (progress.Answers is not null)
+                {
+                    foreach (var answer in progress.Answers)
+                    {
+                        var existingAnswer = await _dbContext.UserQuizAnswers
+                            .FirstOrDefaultAsync(a => a.UserId == request.User.Id && a.QuizQuestionId == answer.QuestionId);
+
+                        if (existingAnswer is null)
+                        {
+                            var newAnswer = new UserQuizAnswer
+                            {
+                                UserId = request.User.Id,
+                                QuizQuestionId = answer.QuestionId,
+                                QuizLevelId = progress.Id,
+                                SelectedOptionIndex = answer.SelectedOptionIndex,
+                                IsCorrect = answer.IsCorrect,
+                                AnsweredAt = now
+                            };
+                            _dbContext.UserQuizAnswers.Add(newAnswer);
+                        }
+                        else
+                        {
+                            // Si vuelve a jugar el nivel, actualizar la respuesta
+                            existingAnswer.SelectedOptionIndex = answer.SelectedOptionIndex;
+                            existingAnswer.IsCorrect = answer.IsCorrect;
+                            existingAnswer.AnsweredAt = now;
+                        }
+                    }
                 }
             }
 

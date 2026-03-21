@@ -9,6 +9,7 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
         public DbSet<QuizLevel> QuizLevels => Set<QuizLevel>();
         public DbSet<QuizQuestion> QuizQuestions => Set<QuizQuestion>();
         public DbSet<UserQuizProgress> UserQuizProgress => Set<UserQuizProgress>();
+        public DbSet<UserQuizAnswer> UserQuizAnswers => Set<UserQuizAnswer>();
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -66,6 +67,30 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
                         
                         entity.HasOne(e => e.QuizLevel)
                                 .WithMany(l => l.UserProgress)
+                                .HasForeignKey(e => e.QuizLevelId)
+                                .OnDelete(DeleteBehavior.Cascade);
+                });
+
+                modelBuilder.Entity<UserQuizAnswer>(entity =>
+                {
+                        entity.ToTable("user_quiz_answers");
+                        entity.HasKey(e => e.Id);
+
+                        // Un usuario solo puede responder una pregunta una vez (si vuelve a jugar, se actualiza)
+                        entity.HasIndex(e => new { e.UserId, e.QuizQuestionId }).IsUnique();
+
+                        entity.HasOne(e => e.Usuario)
+                                .WithMany()
+                                .HasForeignKey(e => e.UserId)
+                                .OnDelete(DeleteBehavior.Cascade);
+
+                        entity.HasOne(e => e.QuizQuestion)
+                                .WithMany()
+                                .HasForeignKey(e => e.QuizQuestionId)
+                                .OnDelete(DeleteBehavior.Cascade);
+
+                        entity.HasOne(e => e.QuizLevel)
+                                .WithMany()
                                 .HasForeignKey(e => e.QuizLevelId)
                                 .OnDelete(DeleteBehavior.Cascade);
                 });

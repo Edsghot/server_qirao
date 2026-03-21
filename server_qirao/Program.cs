@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using server_qirao.Infraestructure.Persistence;
 using server_qirao.Features.Sync.SyncUserData;
 using server_qirao.Features.Quiz.GetLevels;
+using server_qirao.Features.Quiz.GetUserResults;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -32,6 +33,7 @@ builder.Services.AddCors(options =>
 // Registrar servicios de features
 builder.Services.AddScoped<SyncUserDataHandler>();
 builder.Services.AddScoped<GetLevelsHandler>();
+builder.Services.AddScoped<GetUserResultsHandler>();
 
 var app = builder.Build();
 

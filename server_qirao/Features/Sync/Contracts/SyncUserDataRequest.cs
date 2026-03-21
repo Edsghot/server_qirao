@@ -23,5 +23,12 @@ public sealed record QuizProgressSyncDto(
     bool IsLocked,
     bool IsCompleted,
     int Stars,
-    int Points
+    int Points,
+    List<QuizAnswerSyncDto>? Answers
+    );
+
+public sealed record QuizAnswerSyncDto(
+    int QuestionId,
+    int SelectedOptionIndex,
+    bool IsCorrect
     );
