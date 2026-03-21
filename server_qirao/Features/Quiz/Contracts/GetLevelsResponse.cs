@@ -15,5 +15,5 @@ public record GetLevelsResponse(
         string? QuestionTextEn,
         List<string> OptionsEn,
         string ImageUrl,
-        int CorrrectOptionIndex
+        int CorrrectNptionIndex
         );

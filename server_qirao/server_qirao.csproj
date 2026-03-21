@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk.Web">
 
     <PropertyGroup>
-        <TargetFramework>net9.0</TargetFramework>
+        <TargetFramework>net10.0</TargetFramework>
         <Nullable>enable</Nullable>
         <ImplicitUsings>enable</ImplicitUsings>
     </PropertyGroup>
@@ -16,9 +16,5 @@
         <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="9.0.0" />
     </ItemGroup>
 
-    <ItemGroup>
-      <Folder Include="Features\Quiz\GetLevels\" />
-      <Folder Include="Features\Sync\SyncUserData\" />
-    </ItemGroup>
 
 </Project>
