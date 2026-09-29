@@ -3,6 +3,8 @@ using server_qirao.Infraestructure.Persistence;
 using server_qirao.Features.Sync.SyncUserData;
 using server_qirao.Features.Quiz.GetLevels;
 using server_qirao.Features.Quiz.GetUserResults;
+using server_qirao.Features.Users.DeleteUser;
+using server_qirao.Features.AppVersion.GetAppVersion;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -34,6 +36,7 @@ builder.Services.AddCors(options =>
 builder.Services.AddScoped<SyncUserDataHandler>();
 builder.Services.AddScoped<GetLevelsHandler>();
 builder.Services.AddScoped<GetUserResultsHandler>();
+builder.Services.AddScoped<DeleteUserHandler>();
 
 var app = builder.Build();
 
@@ -54,5 +57,7 @@ app.UseCors("AllowFlutterApp");
 // Mapear endpoints
 app.MapSyncEndpoints();
 app.MapQuizEndpoints();
+app.MapUserEndpoints();
+app.MapAppVersionEndpoints();
 
 app.Run();
